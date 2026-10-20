@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Magician's Trial — Стихии</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game-container">
+    <canvas id="game" width="1280" height="720"></canvas>
+    <button id="pause-btn" class="canvas-btn hidden" title="Пауза">❚❚</button>
+
+    <div id="overlay-tutorial" class="overlay hidden">
+        <h2 class="subtitle" id="tutorial-title">Добро пожаловать</h2>
+        <div id="tutorial-content" class="tutorial-slide"></div>
+        <div class="dots-nav" id="tutorial-dots"></div>
+        <div style="display:flex; gap:20px;">
+            <button class="btn-pill" id="tutorial-prev" style="font-size:16px; padding:12px 24px;">◀ Назад</button>
+            <button class="btn-pill pink-glow" id="tutorial-next" style="font-size:16px; padding:12px 24px;">Далее ▶</button>
+        </div>
+    </div>
+
+    <div id="overlay-menu" class="overlay hidden">
+        <h1 class="title" style="margin-bottom: 60px; margin-top: -60px;">Испытание мага</h1>
+        <button class="btn-pill pink-glow" data-action="play" style="font-size: 26px; padding: 20px 80px; margin-bottom: 45px;">Начать</button>
+        <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+            <button class="btn-pill" data-action="shop">🛒 Магазин</button>
+            <button class="btn-pill" data-action="lab">⚗ Алхимия</button>
+            <button class="btn-pill" data-action="settings">⚙ Настройки</button>
+        </div>
+    </div>
+
+    <div id="overlay-levels" class="overlay hidden" style="align-items: flex-start;">
+        <div style="display:flex; align-items:center; gap:20px; width:100%; max-width:1100px; margin-bottom:20px;">
+            <button class="btn-pill" data-action="back-to-menu" style="padding:10px 20px; font-size:24px; border-radius:50%;">←</button>
+            <h2 class="subtitle" style="margin:0;">ВЫБОР УРОВНЯ</h2>
+        </div>
+        <div class="levels-scroll" id="levels-grid"></div>
+    </div>
+
+    <div id="overlay-shop" class="overlay hidden">
+        <div style="display:flex; justify-content:space-between; width:100%; max-width:1000px; align-items:center;">
+            <h2 class="subtitle">Магазин</h2>
+            <div style="font-size:28px; font-weight:900; color:#ffcc00;">💎 <span id="shop-coins">0</span></div>
+        </div>
+        <div class="shop-container" id="shop-grid"></div>
+        <div style="display:flex; gap:16px; margin-top:20px;">
+            <button class="btn-pill" data-action="shop-reset" style="font-size:16px; padding:12px 24px;">Сбросить наряд</button>
+            <button class="btn-pill" data-action="back-to-menu" style="font-size:16px; padding:12px 24px;">Назад</button>
+        </div>
+    </div>
+
+    <div id="overlay-lab" class="overlay hidden">
+        <h2 class="subtitle">Алхимия</h2>
+        <p style="font-size:14px; letter-spacing:3px; color:#ff80df; text-transform:uppercase; font-weight:800;">Смешай ингредиенты — создай субстанции</p>
+        <div class="lab-layout">
+            <div class="ingredients-panel" id="ingredients-panel"></div>
+            <div class="cauldron-area">
+                <div class="cauldron"><div id="cauldron-liquid" class="cauldron-liquid"></div></div>
+                <div id="potion-result" class="result-box">Выберите 2 ингредиента</div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-pill" data-action="lab-clear" style="padding:10px 20px; font-size:14px;">Очистить</button>
+                    <button class="btn-pill pink-glow" data-action="lab-mix" style="padding:10px 20px; font-size:14px;">Смешать</button>
+                </div>
+            </div>
+            <div class="recipes-panel">
+                <h3>Открытые субстанции</h3>
+                <div id="recipes-list"></div>
+            </div>
+        </div>
+        <div style="display:flex; gap:16px; margin-top:20px;">
+            <button class="btn-pill" data-action="show-substances" style="font-size:16px; padding:12px 24px;">Все субстанции</button>
+            <button class="btn-pill" data-action="back-to-menu" style="font-size:16px; padding:12px 24px;">Назад</button>
+        </div>
+    </div>
+
+    <div id="overlay-substances" class="overlay hidden">
+        <h2 class="subtitle">Мои субстанции</h2>
+        <p style="font-size:14px; letter-spacing:3px; color:#ff80df; text-transform:uppercase; font-weight:800;">Открываются вместе с рецептами</p>
+        <div class="substances-grid" id="substances-grid"></div>
+        <button class="btn-pill" data-action="back-to-lab" style="margin-top:20px;">Назад</button>
+    </div>
+
+    <div id="overlay-settings" class="overlay hidden">
+        <div class="settings-box">
+            <div class="settings-row">
+                <span>🔊 Звуки</span>
+                <div class="toggle on" id="toggle-sfx"></div>
+            </div>
+            <div class="settings-row">
+                <span>📖 Обучалка</span>
+                <button class="btn-pill" data-action="show-tutorial" style="font-size:14px; padding:10px 22px;">Показать</button>
+            </div>
+            <div class="settings-row">
+                <span>🗑 Прогресс</span>
+                <button class="btn-pill" data-action="reset-progress" style="font-size:14px; padding:10px 22px;">Сбросить</button>
+            </div>
+            <div style="display:flex; gap:20px; justify-content:center; margin-top:40px;">
+                <button class="btn-pill" data-action="back-to-menu" style="font-size:18px; padding:12px 30px;">Выйти</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay-pause" class="overlay hidden">
+        <h2 class="subtitle">Пауза</h2>
+        <button class="btn-pill" data-action="resume">Продолжить</button>
+        <button class="btn-pill" data-action="restart">Заново</button>
+        <button class="btn-pill" data-action="to-menu">В меню</button>
+    </div>
+
+    <div id="overlay-gameover" class="overlay hidden">
+        <h2 class="subtitle" style="color:#ff4060">Вы проиграли</h2>
+        <p style="font-size:18px; color:#ccc;">Маг падает без сил...</p>
+        <button class="btn-pill" data-action="retry">Попробовать снова</button>
+        <button class="btn-pill" data-action="to-menu">В меню</button>
+    </div>
+
+    <div id="overlay-victory" class="overlay hidden">
+        <h2 class="subtitle" style="color:#40ff80">Стихия покорена!</h2>
+        <p id="victory-stats" style="font-size:20px; margin:10px 0;"></p>
+        <p id="victory-unlock" style="font-size:16px; color:#a9f0a9; margin-bottom:20px;"></p>
+        <div style="display:flex; gap:16px;">
+            <button class="btn-pill pink-glow" data-action="next-level">Далее</button>
+            <button class="btn-pill" data-action="to-menu">В меню</button>
+        </div>
+    </div>
+
+    <div id="overlay-complete" class="overlay hidden">
+        <h1 class="title">Победа!</h1>
+        <p id="complete-stats" style="font-size:24px; margin:20px 0;"></p>
+        <button class="btn-pill" data-action="to-menu" style="margin-top:20px;">В меню</button>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
